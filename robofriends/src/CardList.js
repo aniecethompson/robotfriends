@@ -5,8 +5,15 @@ import { robots } from './robots';
 const CardList = () => {
     
     let getAllRobots = () =>{
-        return robots.map((robot) => {
-           return <Card key={robot.id} id={robot.id} name={robot.name} email={robot.email}/>
+        return robots.map((robot, i) => {
+           return (
+           <Card 
+           key={i} 
+           id={robot.id} 
+           name={robot.name} 
+           email={robot.email}
+           />
+           )
         })
     }
 
