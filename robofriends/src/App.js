@@ -1,17 +1,27 @@
 import React, { Component } from 'react';
 import CardList from './CardList';
 import SearchBar from './SearchBar';
-import { robots } from './robots';
+import Scroll from './Scroll'
+// import { robots } from './robots';
 
 class App extends Component{
     state = {
-        robots: robots,
+        robots: [],
         searchField: ''
     }
 
     onSearchChange =(e) =>{
         this.setState({searchField: e.target.value})
         
+    }
+
+    componentDidMount(){
+        fetch(`https://jsonplaceholder.typicode.com/users`)
+        .then(resp => resp.json())
+        .then(users => {
+           this.setState({robots: users})
+            })
+            
     }
 
     render(){
@@ -22,7 +32,9 @@ class App extends Component{
             <div className="tc">
                 <h1 className="f1">RoboFriends</h1>
                 <SearchBar onSearchChange={this.onSearchChange}/>
-                <CardList robots={filteredRobots}/>
+                <Scroll>
+                    <CardList robots={filteredRobots}/>
+                </Scroll>
             </div>
         ) 
     }
