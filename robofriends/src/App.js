@@ -1,46 +1,60 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import CardList from './CardList';
 import SearchBar from './SearchBar';
 import Scroll from './Scroll'
-// import { robots } from './robots';
+import { setSearchField, requestRobots } from './actions';
+
+const mapStateToProps = (state) => {
+    return{
+        searchField: state.setSearchField.searchField,
+        robots: state.requestRobots.robots,
+        isPending: state.requestRobots.isPending,
+        error: state.requestRobots.error
+
+    }
+}
+
+const mapDispatchToProps = (dispatch) => {
+    return{
+        onSearchChange: (event) => dispatch(setSearchField(event.target.value)),
+        onRequestRobots: () => requestRobots(dispatch)
+    }
+}
 
 class App extends Component{
-    state = {
-        robots: [],
-        searchField: ''
-    }
 
-    onSearchChange =(e) =>{
-        this.setState({searchField: e.target.value})
+
+    // onSearchChange =(e) =>{
+    //     this.setState({searchField: e.target.value})
         
-    }
+    // }
 
     componentDidMount(){
-        fetch(`https://jsonplaceholder.typicode.com/users`)
-        .then(resp => resp.json())
-        .then(users => {
-           this.setState({robots: users})
-            })
+     this.props.onRequestRobots()
             
     }
 
     render(){
-        const filteredRobots = this.state.robots.filter((robot) => {
-            return robot.name.toLowerCase().includes(this.state.searchField.toLowerCase())
+        const {onSearchChange, robots, isPending, searchField}= this.props
+        const filteredRobots = robots.filter((robot) => {
+            return robot.name.toLowerCase().includes(searchField.toLowerCase())
         })
-        return(
+        return isPending?
+        <h1>Loading ...</h1>:
+        (
             <div className="tc">
                 <h1 className="f1">RoboFriends</h1>
-                <SearchBar onSearchChange={this.onSearchChange}/>
+                <SearchBar onSearchChange={onSearchChange}/>
                 <Scroll>
                     <CardList robots={filteredRobots}/>
                 </Scroll>
             </div>
-        ) 
+        )
     }
 }
 
     
 
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);
